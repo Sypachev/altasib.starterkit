@@ -3,10 +3,19 @@ namespace Altasib\Starterkit\Debug;
 
 class Functions
 {
+    public static $pathToModule = false;
+
+    public static function getPathToModule(){
+        if(!self::$pathToModule){
+            self::$pathToModule = dirname(dirname(dirname(__FILE__)));
+        }
+        return self::$pathToModule;
+    }
+
     public static function clearPre(&$content)
     {
         global $USER;
-        if(!isset($_REQUEST["dev"])){
+        if(!self::isDev()){
             if(!$USER->IsAdmin()){
                 if(strpos($content,'<pre class="debug"') !== false){
                     $content = preg_replace("#<pre class=\"debug\">(.*?)</pre>#is","",$content);
@@ -15,7 +24,7 @@ class Functions
         }
     }
 
-    public static function isDev()
+    public static function changeDevStatus()
     {
         global $APPLICATION;
 
@@ -36,30 +45,35 @@ class Functions
 
     }
 
-    public static function isDevTask()
-    {
-        global $APPLICATION;
+    public static function isDev(){
+        return isset($_SESSION["DEV"]) && $_SESSION["DEV"] == "Y" ? true : false;
+    }
 
-        if($_SESSION["DEV"] == "Y"){
+    public static function devTaskOnEpilog()
+    {
+        if(self::isDev()){
             //задача для dev режима
-//            $APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH."/js/media.js");
-//            $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH."/css/media.css");
+            // Используюте свои файлы которые надо положить в корне модуля
+            if(file_exists(self::getPathToModule() . "/custom/devTaskOnEpilog.php")){
+                include_once (self::getPathToModule() . "/custom/devTaskOnEpilog.php");
+            }
         }
 
     }
 
-    public static function isDevTaskOnPageStart(){
-        if($_SESSION["DEV"] == "Y") {
+    public static function devTaskOnPageStart(){
+        if(self::isDev()) {
             //задача для dev режима(например переопределение шаблона)
-            //define("SITE_TEMPLATE_ID", "elf_2016");
+            if(file_exists(self::getPathToModule() ."/custom/devTaskOnPageStart.php")){
+                include_once ( self::getPathToModule() . "/custom/devTaskOnPageStart.php");
+            }
         }
     }
 
     public static function checkSendMail($to_addr){
-        //$to_addr = "dionis@global-arts.ru, dions.78@gmail.com";
-        $subject = "Тест1";
-        $header = "***Тест***1";
-        $message = "Бла, бла, бла\n\rБла, бла, бла\n\rБла, бла, бла\n\rБла, бла, бла\n\rБла, бла, бла";
+        $subject = "Тест*Test";
+        $header = "***Тест***Test***";
+        $message = "Тестовое письмо\n\rЕсли пришло,\n\rто все ОК!!!\n\rTest message";
         var_dump(mail($to_addr, $subject, $message, $header));
     }
 }

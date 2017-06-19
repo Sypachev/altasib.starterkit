@@ -70,17 +70,18 @@ Class altasib_starterkit extends CModule
         $eventManager = \Bitrix\Main\EventManager::getInstance();
         $eventManager->registerEventHandler(
             "main",
-            "OnProlog",
+            "OnPageStart",
             $this->MODULE_ID,
             '\Altasib\Starterkit\Loader\Functions',
-            "start"
+            "start",
+            1
         );
     }
     function unRegisterEvents(){
         $eventManager = \Bitrix\Main\EventManager::getInstance();
         $eventManager->unRegisterEventHandler(
             "main",
-            "OnProlog",
+            "OnPageStart",
             $this->MODULE_ID,
             '\Altasib\Starterkit\Loader',
             "start"
@@ -93,14 +94,33 @@ Class altasib_starterkit extends CModule
 
     function InstallFiles()
     {
-        CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/js", $_SERVER["DOCUMENT_ROOT"]."/bitrix/js/".$this->MODULE_ID, true, true);
-        CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/local/modules/".$this->MODULE_ID."/install/js", $_SERVER["DOCUMENT_ROOT"]."/bitrix/js/".$this->MODULE_ID, true, true);
+        $arDirectory = array(
+            "bitrix",
+            "local",
+        );
+
+        foreach ($arDirectory as $itemDir) {
+            CopyDirFiles($_SERVER["DOCUMENT_ROOT"] . "/".$itemDir."/modules/".$this->MODULE_ID."/install/js", $_SERVER["DOCUMENT_ROOT"]."/bitrix/js/".$this->MODULE_ID, true, true);
+            CopyDirFiles($_SERVER["DOCUMENT_ROOT"] . "/".$itemDir."/modules/".$this->MODULE_ID."/install/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin", true, true);
+            CopyDirFiles($_SERVER["DOCUMENT_ROOT"] . "/".$itemDir."/modules/".$this->MODULE_ID."/install/tools", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/tools", true, true);
+        }
+
 
         return true;
     }
     function UninstallFiles()
     {
         DeleteDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/js/" . $this->MODULE_ID);
+        $arDirectory = array(
+            "bitrix",
+            "local",
+        );
+
+        foreach ($arDirectory as $itemDir) {
+            DeleteDirFiles($_SERVER["DOCUMENT_ROOT"] . "/".$itemDir."/modules/" . $this->MODULE_ID . "/install/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
+            DeleteDirFiles($_SERVER["DOCUMENT_ROOT"] . "/".$itemDir."/modules/" . $this->MODULE_ID . "/install/tools", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/tools");
+        }
+
     }
 
     function GetModuleRightList()

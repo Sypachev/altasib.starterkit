@@ -13,6 +13,16 @@ if(!function_exists("p")){
     }
 }
 
+if(!function_exists("pu")){
+    function pu($obj){
+        $infoDebug = debug_backtrace();
+        $infoDebug = $infoDebug[0];
+        echo '<pre data-file="' . $infoDebug["file"] . '" data-line="' . $infoDebug["line"] . '">';
+        print_r($obj);
+        echo "</pre>";
+    }
+}
+
 if(!function_exists("pe")){
     function pe($obj){
         global $USER;

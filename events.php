@@ -9,18 +9,18 @@ EventManager::getInstance()->addEventHandler(
 
 EventManager::getInstance()->addEventHandler(
     'main',
-    'OnPageStart',
-    array('\Altasib\Starterkit\Debug\Functions', 'isDev')
+    'OnProlog',
+    array('\Altasib\Starterkit\Debug\Functions', 'changeDevStatus')
 );
 
 EventManager::getInstance()->addEventHandler(
     'main',
     'OnEpilog',
-    array('\Altasib\Starterkit\Debug\Functions', 'isDevTask')
+    array('\Altasib\Starterkit\Debug\Functions', 'devTaskOnEpilog')
 );
 
 EventManager::getInstance()->addEventHandler(
     'main',
     'OnPageStart',
-    array('\Altasib\Starterkit\Debug\Functions', 'isDevTaskOnPageStart')
+    array('\Altasib\Starterkit\Debug\Functions', 'devTaskOnPageStart')
 );
